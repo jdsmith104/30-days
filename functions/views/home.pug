@@ -1,0 +1,16 @@
+doctype html
+html
+   head
+      title Hello Pug
+   body
+      h1.greetings#people Hello World!
+      form(action="/result", method="get")
+        input(type="radio" id="easy" name="difficulty" value="easy")
+        label(for="easy") Easy
+        input(type="radio" name="difficulty" value="medium")
+        label(for="medium") Medium
+        input(type="radio" name="difficulty" value ="hard")
+        label(for="hard") Hard
+        br
+        button(type="submit") Submit
+      
