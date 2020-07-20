@@ -62,9 +62,10 @@ exports.getAllExcercise = functions.https.onRequest((req, res) => {
             responseArray.push(doc.data())
         })
         res.status(200).send(responseArray)
-    }).catch(reason =>
-        console.error(reason))
-    res.status(500).send("Error getting document")
+    }).catch(reason => {
+        console.error(reason)
+        res.status(500).send("Error getting document")
+    })
 })
 
 
@@ -72,6 +73,7 @@ exports.getExcercise = functions.https.onRequest((req, res) => {
     // Query for exercise by name and return JSON
     const query = req.query.name
     if (query === undefined) {
+        // Handles no exercise provided with correct query
         res.status(200).send("No query provided")
     } else {
         const responseArray = []
