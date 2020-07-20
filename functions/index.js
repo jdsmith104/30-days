@@ -106,40 +106,36 @@ exports.getRandomExcercise = functions.https.onRequest((req, res) => {
     })
 })
 
+// Get random exercise
 exports.getRandomExcercises = functions.https.onRequest((req, res) => {
-    // Get random exercise
     const quantity = parseInt(req.query.quantity)
     let picks;
-    try {
-        if (quantity === undefined) {
-            picks = 1
-        } else {
-            picks = parseInt(quantity)
-            if (!Number.isInteger(picks)) {
-                console.log("Not a number. Setting picks to 1");
-                picks = 1;
-            }
-        }
-    } catch (error) {
-        console.log("There has been a conversion error.", error)
+    if (quantity === undefined | !Number.isInteger(parseInt(quantity))) {
+        picks = 1
+        console.log("Query 'quantity' is not a number. Setting picks to 1");
+    } else {
+        picks = parseInt(quantity)
     }
-    db.collection("Exercises").get().then(querySnapshot => {
-        const documentArray = querySnapshot.docs
-        if (documentArray.length === 0 | documentArray.length < picks) {
-            res.status(200).send("Query not continued. Number of items in db", documentArray.length, "and number of picks", picks)
-        } else if (documentArray.length === picks) {
-            console.log("Sending ordered list")
-            res.status(200).send(documentArray.map(document => document.data()))
-        } else {
-            // Desired branch. Number of picks is < the number of elements to pick from.
-            const subCollectionArray = customFisherYates(documentArray, picks).map(document => document.data())
-            res.status(200).send(subCollectionArray)
+    db.collection("Exercises").get()
+        .then(querySnapshot => {
+            const numDocuments = querySnapshot.docs.length
+            if (numDocuments === 0 | numDocuments < picks) {
+                res.status(200).send("Query not continued. Number of items in db", numDocuments, "and number of picks", picks)
+            } else if (numDocuments === picks) {
+                console.log("Sending ordered list")
+                // Returns array
+                res.status(200).send(querySnapshot.docs.map(document => document.data()))
+            } else {
+                // Desired branch. Number of picks is < the number of elements to pick from.
+                const subCollectionArray = customFisherYates(querySnapshot.docs, picks).map(document => document.data())
+                // Returns array
+                res.status(200).send(subCollectionArray)
 
-        }
-    }).catch(reason => {
-        console.error(reason)
-        res.status(500).send("Error getting document")
-    })
+            }
+        }).catch(reason => {
+            console.error(reason)
+            res.status(500).send("Error getting document")
+        })
 
 
 })
