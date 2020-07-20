@@ -57,11 +57,11 @@ exports.addExercise = functions.https.onRequest(async (req, res) => {
 
 exports.getAllExcercise = functions.https.onRequest((req, res) => {
     db.collection("Exercises").get().then(querySnapshot => {
-        if (querySnapshot.empty) res.status(204).send("No content to return")
-        else res.status(200).send(querySnapshot.docs.map(doc => doc.data()))
+        if (querySnapshot.empty) return res.status(204).send({ message: "No content to return" })
+        else return res.status(200).send(querySnapshot.docs.map(doc => doc.data()))
     }).catch(reason => {
         console.error(reason)
-        res.status(500).send("Error getting document")
+        return res.status(500).send("Error getting document")
     })
 })
 
@@ -76,12 +76,12 @@ exports.getExcercise = functions.https.onRequest((req, res) => {
         db.collection("Exercises").where("Name", "==", name)
             .get()
             .then(querySnapshot => {
-                if (querySnapshot.empty) res.status(200).send("No matching exercise found")
-                else res.status(200).send(querySnapshot.docs.map(doc => doc.data())[0])
+                if (querySnapshot.empty) return res.status(200).send("No matching exercise found")
+                else return res.status(200).send(querySnapshot.docs.map(doc => doc.data())[0])
             })
-            .catch(function (error) {
+            .catch(error => {
                 console.log("Error getting documents: ", error);
-                res.status(500).send("Error getting documents")
+                return res.status(500).send("Error getting documents")
             });
     }
 })
@@ -92,17 +92,17 @@ exports.getRandomExcercise = functions.https.onRequest((req, res) => {
     db.collection("Exercises").get().then(querySnapshot => {
         const documentArray = querySnapshot.docs
         if (querySnapshot.empty) {
-            res.status(200).send("No exercises found")
+            return res.status(200).send("No exercises found")
         } else {
             // Desired branch. Select 1 random element.
             // I have assumed that a number may be shuffled into it's original position
             const subCollectionArray = customFisherYates(documentArray, 1).map(document => document.data())
             // JSON return type
-            res.status(200).json(subCollectionArray[0])
+            return res.status(200).json(subCollectionArray[0])
         }
     }).catch(reason => {
         console.error(reason)
-        res.status(500).send("Error getting document")
+        return res.status(500).send("Error getting document")
     })
 })
 
@@ -120,21 +120,21 @@ exports.getRandomExcercises = functions.https.onRequest((req, res) => {
         .then(querySnapshot => {
             const numDocuments = querySnapshot.docs.length
             if (numDocuments === 0 | numDocuments < picks) {
-                res.status(200).send("Query not continued. Number of items in db", numDocuments, "and number of picks", picks)
+                return res.status(200).send("Query not continued. Number of items in db", numDocuments, "and number of picks", picks)
             } else if (numDocuments === picks) {
                 console.log("Sending ordered list")
                 // Returns array
-                res.status(200).send(querySnapshot.docs.map(document => document.data()))
+                return res.status(200).send(querySnapshot.docs.map(document => document.data()))
             } else {
                 // Desired branch. Number of picks is < the number of elements to pick from.
                 const subCollectionArray = customFisherYates(querySnapshot.docs, picks).map(document => document.data())
                 // Returns array
-                res.status(200).send(subCollectionArray)
+                return res.status(200).send(subCollectionArray)
 
             }
         }).catch(reason => {
             console.error(reason)
-            res.status(500).send("Error getting document")
+            return res.status(500).send("Error getting document")
         })
 
 
@@ -153,11 +153,11 @@ exports.updateExcercise = functions.https.onRequest((req, res) => {
     const name = req.query.name;
     console.log(name)
     if (name === undefined) {
-        res.status(200).send("Bad query")
+        return res.status(200).send("Bad query")
     } else {
         db.collection("Exercises").where("Name", "==", name).get().then(querySnapshot => {
             if (querySnapshot.empty) {
-                res.status(200).send("No document found")
+                return res.status(200).send("No document found")
             } else {
                 const document = querySnapshot.docs[0]
                 const settings = Object.assign({}, document.data())
@@ -167,11 +167,11 @@ exports.updateExcercise = functions.https.onRequest((req, res) => {
                 if (req.body.Name !== undefined) settings.Name = req.body.Name
                 db.collection("Exercises").doc(document.id).update(settings)
                 // Updated document (Object)
-                res.status(200).json(settings)
+                return res.status(200).json(settings)
             }
         }).catch(reason => {
             console.error(reason)
-            res.status(500).send("Not sure how to handle this")
+            return res.status(500).send("Not sure how to handle this")
         })
     }
 
