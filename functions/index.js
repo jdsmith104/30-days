@@ -65,26 +65,19 @@ exports.getAllExcercise = functions.https.onRequest((req, res) => {
     })
 })
 
-
+// Case matters here
 exports.getExcercise = functions.https.onRequest((req, res) => {
     // Query for exercise by name and return JSON
     const name = req.query.name
     if (name === undefined) {
         // Handles no exercise provided with correct query
-        res.status(200).send("No query provided")
+        res.status(404).send("Incorrect query provided")
     } else {
-        const responseArray = []
-        console.log(name)
         db.collection("Exercises").where("Name", "==", name)
             .get()
             .then(querySnapshot => {
-                querySnapshot.forEach(function (doc) {
-                    // doc.data() is never undefined for query doc snapshots
-                    responseArray.push(doc.data())
-                });
-                if (responseArray.length === 0) res.status(200).send("No matching name found")
-                else res.status(200).send(responseArray[0])
-
+                if (querySnapshot.empty) res.status(200).send("No matching exercise found")
+                else res.status(200).send(querySnapshot.docs.map(doc => doc.data())[0])
             })
             .catch(function (error) {
                 console.log("Error getting documents: ", error);
