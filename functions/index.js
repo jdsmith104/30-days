@@ -57,7 +57,8 @@ exports.addExercise = functions.https.onRequest(async (req, res) => {
 
 exports.getAllExcercise = functions.https.onRequest((req, res) => {
     db.collection("Exercises").get().then(querySnapshot => {
-        res.status(200).send(querySnapshot.docs.map(doc => doc.data()))
+        if (querySnapshot.empty) res.status(204).send("No content to return")
+        else res.status(200).send(querySnapshot.docs.map(doc => doc.data()))
     }).catch(reason => {
         console.error(reason)
         res.status(500).send("Error getting document")
@@ -67,14 +68,14 @@ exports.getAllExcercise = functions.https.onRequest((req, res) => {
 
 exports.getExcercise = functions.https.onRequest((req, res) => {
     // Query for exercise by name and return JSON
-    const query = req.query.name
-    if (query === undefined) {
+    const name = req.query.name
+    if (name === undefined) {
         // Handles no exercise provided with correct query
         res.status(200).send("No query provided")
     } else {
         const responseArray = []
-        console.log(query)
-        db.collection("Exercises").where("Name", "==", query)
+        console.log(name)
+        db.collection("Exercises").where("Name", "==", name)
             .get()
             .then(querySnapshot => {
                 querySnapshot.forEach(function (doc) {
