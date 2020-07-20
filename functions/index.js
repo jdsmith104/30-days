@@ -89,32 +89,21 @@ exports.getExcercise = functions.https.onRequest((req, res) => {
 // https://stackoverflow.com/questions/46798981/firestore-how-to-get-random-documents-in-a-collection
 exports.getRandomExcercise = functions.https.onRequest((req, res) => {
     // Get random exercise
-    const random = Math.random() * MAX_SEED
-    db.collection("Exercises").where("random", ">=", random).orderBy("random").limit(1)
-        .get()
-        .then(querySnapshot => {
-            if (querySnapshot.empty) {
-                // Handle no documents found
-                db.collection("Exercises").where("random", ">=", 0).orderBy("random").limit(1)
-                    .get()
-                    .then(querySnapshot => {
-                        if (querySnapshot.size === 0) res.status(200).send("No document found")
-                        else res.status(200).send(querySnapshot.docs[0].data())
-                    })
-                    .catch(function (error) {
-                        console.log("Error getting documents: ", error);
-                        res.status(500).send("Error getting documents")
-                    });
-            }
-            else {
-                res.status(200).send(querySnapshot.docs[0].data())
-            }
-        })
-        .catch(function (error) {
-            console.log("Error getting documents: ", error);
-            res.status(500).send("Error getting documents")
-        });
-    console.log("Random:", random)
+    db.collection("Exercises").get().then(querySnapshot => {
+        const documentArray = querySnapshot.docs
+        if (querySnapshot.empty) {
+            res.status(200).send("No exercises found")
+        } else {
+            // Desired branch. Select 1 random element.
+            // I have assumed that a number may be shuffled into it's original position
+            const subCollectionArray = customFisherYates(documentArray, 1).map(document => document.data())
+            // JSON return type
+            res.status(200).json(subCollectionArray[0])
+        }
+    }).catch(reason => {
+        console.error(reason)
+        res.status(500).send("Error getting document")
+    })
 })
 
 exports.getRandomExcercises = functions.https.onRequest((req, res) => {
