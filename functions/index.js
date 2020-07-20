@@ -56,12 +56,8 @@ exports.addExercise = functions.https.onRequest(async (req, res) => {
 });
 
 exports.getAllExcercise = functions.https.onRequest((req, res) => {
-    const responseArray = []
     db.collection("Exercises").get().then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-            responseArray.push(doc.data())
-        })
-        res.status(200).send(responseArray)
+        res.status(200).send(querySnapshot.docs.map(doc => doc.data()))
     }).catch(reason => {
         console.error(reason)
         res.status(500).send("Error getting document")
@@ -191,6 +187,7 @@ exports.updateExcercise = functions.https.onRequest((req, res) => {
                 if (req.body.Hard !== undefined) settings.Hard = req.body.Hard
                 if (req.body.Name !== undefined) settings.Name = req.body.Name
                 db.collection("Exercises").doc(document.id).update(settings)
+                // Updated document (Object)
                 res.status(200).json(settings)
             }
         }).catch(reason => {
