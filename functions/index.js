@@ -129,7 +129,21 @@ exports.getRandomExcercise = functions.https.onRequest((req, res) => {
 
 exports.getRandomExcercises = functions.https.onRequest((req, res) => {
     // Get random exercise
-    const picks = req.query
+    const quantity = parseInt(req.query.quantity)
+    let picks;
+    try {
+        if (quantity === undefined) {
+            picks = 1
+        } else {
+            picks = parseInt(quantity)
+            if (!Number.isInteger(picks)) {
+                console.log("Not a number. Setting picks to 1");
+                picks = 1;
+            }
+        }
+    } catch (error) {
+        console.log("There has been a conversion error.", error)
+    }
     console.log("Picks", picks)
     db.collection("Exercises").get().then(querySnapshot => {
         const collectionArray = querySnapshot.docs
