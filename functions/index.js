@@ -38,7 +38,7 @@ exports.home = functions.https.onRequest(app)
 /* 
 curl -X POST -d "Name=Press%20up&Easy=5&Medium=10&Hard=20" http://localhost:5001/days-web/us-central1/addExercise
 curl -X POST -d "Name=Squat&Easy=20&Medium=40&Hard=60" http://localhost:5001/days-web/us-central1/addExercise
-curl -X POST -d "Name=Squat&Easy=20&Medium=40&Hard=60" http://localhost:5001/days-web/us-central1/addExercise
+curl -X POST -d "Name=Sit%20up&Easy=10&Medium=20&Hard=30" http://localhost:5001/days-web/us-central1/addExercise
 curl -X POST -d "Name=Crunch&Easy=10&Medium=20&Hard=30" http://localhost:5001/days-web/us-central1/addExercise
  */
 
@@ -165,17 +165,40 @@ exports.getRandomExcercises = functions.https.onRequest((req, res) => {
 
 })
 
+
+
+/* 
+curl -X POST -d "Name=Press%20up&Easy=5&Medium=10&Hard=20" http://localhost:5001/days-web/us-central1/updateExcercise?name=Press%20up
+curl -X POST -d "Name=Sit%20up&Easy=1000&Medium=100&Hard=100" http://localhost:5001/days-web/us-central1/updateExcercise?name=Sit%20up
+curl -X POST -d "Name=Squat&Easy=20&Medium=40&Hard=60" http://localhost:5001/days-web/us-central1/updateExcercise?name=
+curl -X POST -d "Name=Crunch&Easy=10&Medium=20&Hard=30" http://localhost:5001/days-web/us-central1/updateExcercise?name=Crunch
+ */
 exports.updateExcercise = functions.https.onRequest((req, res) => {
-    // Patch request
-    const responseArray = []
-    db.collection("Exercises").get().then(querySnapshot => {
-        querySnapshot.forEach(doc => {
-            responseArray.push(doc.data())
+    // Patch request?
+    const name = req.query.name;
+    console.log(name)
+    if (name === undefined) {
+        res.status(200).send("Bad query")
+    } else {
+        db.collection("Exercises").where("Name", "==", name).get().then(querySnapshot => {
+            if (querySnapshot.empty) {
+                res.status(200).send("No document found")
+            } else {
+                const document = querySnapshot.docs[0]
+                const settings = Object.assign({}, document.data())
+                if (req.body.Easy !== undefined) settings.Easy = req.body.Easy
+                if (req.body.Medium !== undefined) settings.Medium = req.body.Medium
+                if (req.body.Hard !== undefined) settings.Hard = req.body.Hard
+                if (req.body.Name !== undefined) settings.Name = req.body.Name
+                db.collection("Exercises").doc(document.id).update(settings)
+                res.status(200).json(settings)
+            }
+        }).catch(reason => {
+            console.error(reason)
+            res.status(500).send("Not sure how to handle this")
         })
-        res.status(200).send(responseArray)
-    }).catch(reason =>
-        console.error(reason))
-    res.status(500).send("Not sure how to handle this")
+    }
+
 })
 
 // Probably works
