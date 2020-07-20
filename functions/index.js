@@ -144,13 +144,19 @@ exports.getRandomExcercises = functions.https.onRequest((req, res) => {
     } catch (error) {
         console.log("There has been a conversion error.", error)
     }
-    console.log("Picks", picks)
     db.collection("Exercises").get().then(querySnapshot => {
-        const collectionArray = querySnapshot.docs
-        const i = Math.floor(Math.random() * collectionArray.length)
-        if (i == collectionArray.length) { i = collectionArray.length - 1 }
-        console.log("Index", i)
-        res.status(200).send(collectionArray[i].data())
+        const documentArray = querySnapshot.docs
+        if (documentArray.length === 0 | documentArray.length < picks) {
+            res.status(200).send("Query not continued. Number of items in db", documentArray.length, "and number of picks", picks)
+        } else if (documentArray.length === picks) {
+            console.log("Sending ordered list")
+            res.status(200).send(documentArray.map(document => document.data()))
+        } else {
+            // Desired branch. Number of picks is < the number of elements to pick from.
+            const subCollectionArray = customFisherYates(documentArray, picks).map(document => document.data())
+            res.status(200).send(subCollectionArray)
+
+        }
     }).catch(reason => {
         console.error(reason)
         res.status(500).send("Error getting document")
