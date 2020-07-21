@@ -7,7 +7,19 @@
         "function": "home"
       },
       {
-        "source": "/result",
+        "source": "/results",
+        "function": "home"
+      },
+      {
+        "source": "/all-exercises",
+        "function": "home"
+      },
+      {
+        "source": "/test",
+        "function": "home"
+      },
+      {
+        "source": "/add-exercise",
         "function": "home"
       }
     ],

@@ -1,0 +1,22 @@
+doctype html
+html
+   head
+      title Hello Pug
+      link(rel="stylesheet" href="styles.css")
+   body
+      h1.greetings#people Big Form Energy
+      form(action="/add-exercise", method="post")
+        h3 Exercise Name
+        input(type="text" id="exercise-name" name="Name" value="")
+        br
+        h3 Easy
+        input(type="text" id="exercise-name" name="Easy" value="")
+        br
+        h3 Medium
+        input(type="text" id="exercise-name" name="Medium" value="")
+        br
+        h3 Hard
+        input(type="text" id="exercise-name" name="Hard" value="")
+        br
+        button(type="submit") Submit
+      
