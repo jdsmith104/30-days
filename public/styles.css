@@ -1,5 +1,15 @@
 #home-body{
-    background-color: darkorange;
+    background-color: lightskyblue;
+}
+
+#home-body h3{
+    color: black;
+    margin: 10px;
+}
+
+#home-body select{
+    margin: 0 10px 10px 10px;
+    font-size: medium;
 }
 #result-body{
     background-color: darksalmon;
@@ -10,8 +20,58 @@
 
 body{
     background-color: whitesmoke;
+    font-family: 'Fira Sans', sans-serif;
+}
+
+button{
+    background-color: cornflowerblue;
+    color: black;
+    font-size: medium;
+    width: 150px;
+    height: 30px;
+    border-radius: 5px;
+    border: black 1px solid;
+    margin: 10px;
 }
 
 .link{
     margin: 15px;
 }
+
+.input-group {
+    background-color: cornflowerblue;
+    display: block;
+    margin: 10px 0;
+    margin-left: 10px;
+    position: relative;
+    border-radius: 5px;
+    max-width: 150px;
+
+}
+
+.input-group label {
+    padding: 12px 15px;
+    width: 50px;
+    display: block;
+    text-align: left;
+    color: black;
+}
+
+.input-group input {
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    order: 1;
+    z-index: 2;
+    position: absolute;
+    right: 30px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    visibility: visible;
+  }
+    
+  
+
+
+

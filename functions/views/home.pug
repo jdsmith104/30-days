@@ -4,17 +4,22 @@ block content
    div(id="home-body")
       h1.greetings#people Generate Exercises
       form(action="/results", method="get")
-         input(type="radio" id="easy" name="difficulty" value="Easy")
-         label(for="easy") Easy
-         input(type="radio" name="difficulty" value="Medium")
-         label(for="medium") Medium
-         input(type="radio" name="difficulty" value ="Hard")
-         label(for="hard") Hard
-         br
-         select(name="quantity")
-            option(value=3) 3
-            option(value=4) 4
-            option(value=5) 5
-         br
+         h3 Difficulty
+         div(class="input-group")
+            input(type="radio" id="easy" name="difficulty" value="Easy")
+            label(for="easy") Easy
+         div(class="input-group")
+            input(type="radio" name="difficulty" value="Medium")
+            label(for="medium") Medium
+         div(class="input-group")
+            input(type="radio" name="difficulty" value ="Hard")
+            label(for="hard") Hard
+         div(id="quantity-div")
+            h3 Quanity
+            select(name="quantity")
+               option(value=1) 1
+               option(value=2) 2
+               option(value=3) 3
+               option(value=4) 4
          button(type="submit") Generate
       
