@@ -12,7 +12,6 @@ const db = admin.firestore()
 //   functions.logger.info("Hello logs!", {structuredData: true});
 //   response.send("Hello from Firebase!");
 // });
-
 const express = require('express');
 const app = express();
 app.set('view engine', 'pug');
@@ -32,8 +31,25 @@ app.use("/result", result, (req, res, next) => {
     next();
 })
 
-exports.home = functions.https.onRequest(app)
+// Have to use app becuase firebase won't render the pug templates
+app.get("/all-exercises", async (req, res) => {
+    try {
+        return db.collection("Exercises").get().then(querySnapshot => {
+            if (querySnapshot.empty) return res.status(200).send({ message: "No content to return" })
+            else return res.status(200).render("result", {
+                exercises: querySnapshot.docs.map(doc => doc.data())
+            })
+        }).catch(reason => {
+            console.error(reason)
+            return res.status(500).send("Error getting document")
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(404)
+    }
+})
 
+exports.home = functions.https.onRequest(app)
 
 /* 
 curl -X POST -d "Name=Press%20up&Easy=5&Medium=10&Hard=20" http://localhost:5001/days-web/us-central1/addExercise
@@ -55,14 +71,21 @@ exports.addExercise = functions.https.onRequest(async (req, res) => {
     res.status(200).json({ result: `Message with ID: ${writeResult.id} added.` });
 });
 
-exports.getAllExcercise = functions.https.onRequest((req, res) => {
-    db.collection("Exercises").get().then(querySnapshot => {
-        if (querySnapshot.empty) return res.status(204).send({ message: "No content to return" })
-        else return res.status(200).send(querySnapshot.docs.map(doc => doc.data()))
-    }).catch(reason => {
-        console.error(reason)
-        return res.status(500).send("Error getting document")
-    })
+exports.getAllExcercise = functions.https.onRequest(async (req, res) => {
+    try {
+        return db.collection("Exercises").get().then(querySnapshot => {
+            if (querySnapshot.empty) return res.status(200).send({ message: "No content to return" })
+            else return res.status(200).render("result", {
+                exercises: querySnapshot.docs.map(doc => doc.data())
+            })
+        }).catch(reason => {
+            console.error(reason)
+            return res.status(500).send("Error getting document")
+        })
+    } catch (error) {
+        console.log(error)
+        return res.status(404)
+    }
 })
 
 // Case matters here
