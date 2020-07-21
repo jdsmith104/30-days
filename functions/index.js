@@ -69,16 +69,29 @@ app.get("/results", result, (req, res) => {
 })
 
 app.get("/add-exercise", (req, res) => {
-    res.render("form")
+    res.render("form", {
+        message: ""
+    })
 })
 
 app.post("/add-exercise", async (req, res) => {
     try {
-        const exercise = req.body;
-        exercise.random = Math.random() * MAX_SEED
-        const writeResult = await db.collection('Exercises').add(exercise);
-        console.log(`Message with ID: ${writeResult.id} added.`)
-        return res.status(200).render("form")
+        // Validation logic
+        let message = "";
+        if (req.body.Name === "") {
+            console.log("Invalid form")
+            message = "Invalid"
+        }
+        else {
+            const exercise = req.body;
+            exercise.random = Math.random() * MAX_SEED
+            const writeResult = await db.collection('Exercises').add(exercise);
+            console.log(`Message with ID: ${writeResult.id} added.`)
+            message = "Valid"
+        }
+        return res.status(200).render("form", {
+            message: message
+        })
     } catch (error) {
         console.log(error)
         return res.status(404)
