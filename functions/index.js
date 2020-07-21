@@ -26,40 +26,63 @@ app.use("/result", result, (req, res, next) => {
 })
 
 app.get("/results", result, (req, res) => {
-    const quantity = parseInt(req.query.quantity)
-    let picks;
-    if (quantity === undefined | !Number.isInteger(parseInt(quantity))) {
-        picks = 1
-        console.log("Query 'quantity' is not a number. Setting picks to 1");
-    } else {
-        picks = parseInt(quantity)
+    try {
+        const quantity = parseInt(req.query.quantity)
+        let picks;
+        if (quantity === undefined | !Number.isInteger(parseInt(quantity))) {
+            picks = 1
+            console.log("Query 'quantity' is not a number. Setting picks to 1");
+        } else {
+            picks = parseInt(quantity)
+        }
+        return db.collection("Exercises").get()
+            .then(querySnapshot => {
+                const numDocuments = querySnapshot.docs.length
+                if (numDocuments === 0 | numDocuments < picks) {
+                    return res.status(200).send("Query not continued. Number of items in db", numDocuments, "and number of picks", picks)
+                } else if (numDocuments === picks) {
+                    console.log("Sending ordered list")
+                    // Returns array
+                    return res.status(200).render("result", {
+                        exercises: querySnapshot.docs.map(doc => doc.data())
+                    })
+                } else {
+                    // Desired branch. Number of picks is < the number of elements to pick from.
+                    const subCollectionArray = customFisherYates(querySnapshot.docs, picks).map(document => document.data())
+                    // Returns array
+                    return res.status(200).render("result", {
+                        exercises: subCollectionArray,
+                        level: req.query.difficulty
+                    })
+
+                }
+            }).catch(reason => {
+                console.error(reason)
+                return res.status(500).send("Error getting document")
+            })
+    } catch (error) {
+        console.log(error)
+        return res.status(404)
     }
-    return db.collection("Exercises").get()
-        .then(querySnapshot => {
-            const numDocuments = querySnapshot.docs.length
-            if (numDocuments === 0 | numDocuments < picks) {
-                return res.status(200).send("Query not continued. Number of items in db", numDocuments, "and number of picks", picks)
-            } else if (numDocuments === picks) {
-                console.log("Sending ordered list")
-                // Returns array
-                return res.status(200).render("result", {
-                    exercises: querySnapshot.docs.map(doc => doc.data())
-                })
-            } else {
-                // Desired branch. Number of picks is < the number of elements to pick from.
-                const subCollectionArray = customFisherYates(querySnapshot.docs, picks).map(document => document.data())
-                // Returns array
-                return res.status(200).render("result", {
-                    exercises: subCollectionArray,
-                    level: req.query.difficulty
-                })
 
-            }
-        }).catch(reason => {
-            console.error(reason)
-            return res.status(500).send("Error getting document")
-        })
 
+})
+
+app.get("/add-exercise", (req, res) => {
+    res.render("form")
+})
+
+app.post("/add-exercise", async (req, res) => {
+    try {
+        const exercise = req.body;
+        exercise.random = Math.random() * MAX_SEED
+        const writeResult = await db.collection('Exercises').add(exercise);
+        console.log(`Message with ID: ${writeResult.id} added.`)
+        return res.status(200).render("form")
+    } catch (error) {
+        console.log(error)
+        return res.status(404)
+    }
 })
 
 // Have to use app becuase firebase won't render the pug templates
