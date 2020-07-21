@@ -1,7 +1,11 @@
 html
    head
-      title=name
+      title Jacob
       link(rel="stylesheet" href="styles.css")
-   body
+   body(id="result-body")
+      a(href="/") Home
       h1=name
-      h2 Wow what a great time with #{rows}
+      h2 Wow what a great time with stuff
+      each exercise in exercises
+         h3=exercise.Name
+         p=exercise[level]

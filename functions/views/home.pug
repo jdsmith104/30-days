@@ -3,14 +3,15 @@ html
    head
       title Hello Pug
       link(rel="stylesheet" href="styles.css")
-   body
-      h1.greetings#people Choose something
-      form(action="/result", method="get")
-        input(type="radio" id="easy" name="difficulty" value="easy")
+   body(id="home-body")
+      a(href="add-exercise") New Exercise
+      h1.greetings#people Generate Exercises
+      form(action="/results", method="get")
+        input(type="radio" id="easy" name="difficulty" value="Easy")
         label(for="easy") Easy
-        input(type="radio" name="difficulty" value="medium")
+        input(type="radio" name="difficulty" value="Medium")
         label(for="medium") Medium
-        input(type="radio" name="difficulty" value ="hard")
+        input(type="radio" name="difficulty" value ="Hard")
         label(for="hard") Hard
         br
         select(name="quantity")
@@ -18,5 +19,5 @@ html
          option(value=4) 4
          option(value=5) 5
         br
-        button(type="submit") Submit
+        button(type="submit") Generate
       

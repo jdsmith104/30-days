@@ -3,20 +3,22 @@ html
    head
       title Hello Pug
       link(rel="stylesheet" href="styles.css")
-   body
+   body(id="form-body")
+      a(href="/") Home
       h1.greetings#people Big Form Energy
-      form(action="/add-exercise", method="post")
+      form(action="/add-exercise" method="post")
         h3 Exercise Name
-        input(type="text" id="exercise-name" name="Name" value="")
+        input(type="text" id="exercise-name" name="Name" value=params.Name)
         br
         h3 Easy
-        input(type="text" id="exercise-name" name="Easy" value="")
+        input(type="text" id="exercise-name" name="Easy" value=params.Easy)
         br
         h3 Medium
-        input(type="text" id="exercise-name" name="Medium" value="")
+        input(type="text" id="exercise-name" name="Medium" value=params.Medium)
         br
         h3 Hard
-        input(type="text" id="exercise-name" name="Hard" value="")
+        input(type="text" id="exercise-name" name="Hard" value=params.Hard)
         br
         button(type="submit") Submit
+        h1=message
       
