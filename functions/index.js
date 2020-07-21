@@ -115,7 +115,7 @@ app.get("/all-exercises", async (req, res) => {
     try {
         return db.collection("Exercises").get().then(querySnapshot => {
             if (querySnapshot.empty) return res.status(200).send({ message: "No content to return" })
-            else return res.status(200).render("result", {
+            else return res.status(200).render("result-all", {
                 exercises: querySnapshot.docs.map(doc => doc.data())
             })
         }).catch(reason => {
