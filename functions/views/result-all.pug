@@ -1,13 +1,11 @@
-html
-   head
-      title Jacob
-      link(rel="stylesheet" href="styles.css")
-   body(id="result-body")
-      a(href="/") Home
+extends layout.pug
+
+block content
+   div(id="result-body")
       h1=name
       h2 All Results
       each exercise in exercises
          h3=exercise.Name
-         p=exercise.Easy
-         p=exercise.Medium
-         p=exercise.Hard
+         p Easy #{exercise.Easy}
+         p Medium #{exercise.Medium}
+         p Hard #{exercise.Hard}

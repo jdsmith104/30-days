@@ -1,11 +1,8 @@
-html
-   head
-      title Jacob
-      link(rel="stylesheet" href="styles.css")
-   body(id="result-body")
-      a(href="/") Home
+extends layout.pug
+block content
+   div(id="result-body")
       h1=name
-      h2 Wow what a great time with stuff
+      h2 Here are the exercises #{level}
       each exercise in exercises
          h3=exercise.Name
          p=exercise[level]
