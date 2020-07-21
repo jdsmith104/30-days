@@ -1,8 +1,16 @@
 #home-body{
     background-color: lightskyblue;
+    text-align: center;
 }
 
-#home-body h3{
+.header{
+    display: grid;
+    grid-template-columns: auto auto auto;
+    margin: 0 auto;
+    text-align: center;
+}
+
+#home-body h2{
     color: black;
     margin: 10px;
 }
@@ -13,9 +21,15 @@
 }
 #result-body{
     background-color: darksalmon;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
 }
 #form-body{
     background-color: lightskyblue;
+    padding: 10px;
+    margin-top: 10px;
+    text-align: center;
 }
 
 body{
@@ -41,8 +55,8 @@ button{
 .input-group {
     background-color: cornflowerblue;
     display: block;
-    margin: 10px 0;
-    margin-left: 10px;
+    margin: 0 auto;
+    margin-bottom: 10px;
     position: relative;
     border-radius: 5px;
     max-width: 150px;
@@ -71,7 +85,27 @@ button{
     visibility: visible;
   }
     
-  
+#result-body h1{
+    margin: 0;
+}
+
+.exercise-div{
+    border: black 1px solid;
+    border-radius: 5px;
+    padding-left: 10px;
+    margin-bottom: 10px;
+}
 
 
+#form-body h1{
+    margin-top: 0;
+}
 
+#form-body h3{
+    margin: 0;
+}
+
+#form-body input[type="text"]{
+   height: 25px;
+   margin-bottom: 5px;
+}
