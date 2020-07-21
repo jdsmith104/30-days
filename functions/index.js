@@ -69,9 +69,17 @@ app.get("/results", result, (req, res) => {
 })
 
 app.get("/add-exercise", (req, res) => {
-    res.render("form", {
-        message: ""
-    })
+    try {
+        res.render("form", {
+            message: "",
+            params: {
+                Name: "", Easy: "", Medium: "", Hard: ""
+            }
+        })
+    } catch (error) {
+        console.log(error)
+        res.status(404)
+    }
 })
 
 app.post("/add-exercise", async (req, res) => {
@@ -80,18 +88,22 @@ app.post("/add-exercise", async (req, res) => {
         let message = "";
         if (req.body.Name === "" | req.body.Hard === "" | req.body.Medium === "" | req.body.Easy === "") {
             console.log("Invalid form")
-            message = "Fill in empty boxes"
-        }
-        else {
+            return res.status(200).render("form", {
+                message: "Fill in empty sections",
+                params: req.body
+            })
+        } else {
             const exercise = req.body;
             exercise.random = Math.random() * MAX_SEED
             const writeResult = await db.collection('Exercises').add(exercise);
             console.log(`Message with ID: ${writeResult.id} added.`)
-            message = "Valid"
+            return res.status(200).render("form", {
+                message: "Successfully subbmitted",
+                params: {
+                    Name: "", Easy: "", Medium: "", Hard: ""
+                }
+            })
         }
-        return res.status(200).render("form", {
-            message: message
-        })
     } catch (error) {
         console.log(error)
         return res.status(404)
