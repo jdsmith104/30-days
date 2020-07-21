@@ -28,6 +28,7 @@ app.use("/result", result, (req, res, next) => {
 app.get("/results", result, (req, res) => {
     try {
         const quantity = parseInt(req.query.quantity)
+        const difficulty = req.query.difficulty
         let picks;
         if (quantity === undefined | !Number.isInteger(parseInt(quantity))) {
             picks = 1
@@ -39,12 +40,16 @@ app.get("/results", result, (req, res) => {
             .then(querySnapshot => {
                 const numDocuments = querySnapshot.docs.length
                 if (numDocuments === 0 | numDocuments < picks) {
-                    return res.status(200).send("Query not continued. Number of items in db " + numDocuments + " and number of picks " + picks)
+                    return res.status(200).render("none-found", {
+                        title: "No exercises available",
+                        message: "Try adding other exercises"
+                    })
                 } else if (numDocuments === picks) {
                     console.log("Sending ordered list")
                     // Returns array
                     return res.status(200).render("result", {
-                        exercises: querySnapshot.docs.map(doc => doc.data())
+                        exercises: querySnapshot.docs.map(doc => doc.data()),
+                        level: difficulty
                     })
                 } else {
                     // Desired branch. Number of picks is < the number of elements to pick from.
@@ -52,7 +57,7 @@ app.get("/results", result, (req, res) => {
                     // Returns array
                     return res.status(200).render("result", {
                         exercises: subCollectionArray,
-                        level: req.query.difficulty
+                        level: difficulty
                     })
 
                 }
@@ -98,7 +103,7 @@ app.post("/add-exercise", async (req, res) => {
             const writeResult = await db.collection('Exercises').add(exercise);
             console.log(`Message with ID: ${writeResult.id} added.`)
             return res.status(200).render("form", {
-                message: "Successfully subbmitted",
+                message: "Successfully submitted",
                 params: {
                     Name: "", Easy: "", Medium: "", Hard: ""
                 }
@@ -120,7 +125,10 @@ app.get("/all-exercises", async (req, res) => {
             })
         }).catch(reason => {
             console.error(reason)
-            return res.status(500).send("Error getting document")
+            return res.status(500).render("none-found", {
+                title: "No exercises available",
+                message: "Try adding other exercises"
+            })
         })
     } catch (error) {
         console.log(error)
