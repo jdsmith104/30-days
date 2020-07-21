@@ -78,9 +78,9 @@ app.post("/add-exercise", async (req, res) => {
     try {
         // Validation logic
         let message = "";
-        if (req.body.Name === "") {
+        if (req.body.Name === "" | req.body.Hard === "" | req.body.Medium === "" | req.body.Easy === "") {
             console.log("Invalid form")
-            message = "Invalid"
+            message = "Fill in empty boxes"
         }
         else {
             const exercise = req.body;
