@@ -39,7 +39,7 @@ app.get("/results", result, (req, res) => {
             .then(querySnapshot => {
                 const numDocuments = querySnapshot.docs.length
                 if (numDocuments === 0 | numDocuments < picks) {
-                    return res.status(200).send("Query not continued. Number of items in db", numDocuments, "and number of picks", picks)
+                    return res.status(200).send("Query not continued. Number of items in db " + numDocuments + " and number of picks " + picks)
                 } else if (numDocuments === picks) {
                     console.log("Sending ordered list")
                     // Returns array
