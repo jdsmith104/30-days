@@ -5,7 +5,8 @@ block content
       h1=name
       h2 All Results
       each exercise in exercises
-         h3=exercise.Name
-         p Easy #{exercise.Easy}
-         p Medium #{exercise.Medium}
-         p Hard #{exercise.Hard}
+         div(class="exercise-div")
+            h3=exercise.Name
+            p Easy: #{exercise.Easy} reps
+            p Medium: #{exercise.Medium} reps
+            p Hard: #{exercise.Hard} reps

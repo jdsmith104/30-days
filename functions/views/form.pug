@@ -1,18 +1,18 @@
 extends layout.pug
 block content
    div(id="form-body")
-      h1.greetings#people Big Form Energy
+      h1.greetings#people New exercise form
       form(action="/add-exercise" method="post")
         h3 Exercise Name
         input(type="text" id="exercise-name" name="Name" value=params.Name)
         br
-        h3 Easy
+        h3 Easy Reps
         input(type="text" id="exercise-name" name="Easy" value=params.Easy)
         br
-        h3 Medium
+        h3 Medium Reps
         input(type="text" id="exercise-name" name="Medium" value=params.Medium)
         br
-        h3 Hard
+        h3 Hard Reps
         input(type="text" id="exercise-name" name="Hard" value=params.Hard)
         br
         button(type="submit") Submit

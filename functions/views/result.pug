@@ -1,8 +1,9 @@
 extends layout.pug
 block content
    div(id="result-body")
-      h1=name
-      h2 Here are the exercises #{level}
+      h1 Generated exercises 
+      h2 Difficulty: #{level}
       each exercise in exercises
-         h3=exercise.Name
-         p=exercise[level]
+         div(class="exercise-div")
+            h3=exercise.Name
+            p #{exercise[level]} reps
