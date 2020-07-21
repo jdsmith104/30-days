@@ -5,13 +5,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 const db = admin.firestore()
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//   functions.logger.info("Hello logs!", {structuredData: true});
-//   response.send("Hello from Firebase!");
-// });
+
 const express = require('express');
 const app = express();
 app.set('view engine', 'pug');
@@ -29,6 +23,43 @@ app.get('/', (req, res) => {
 app.use("/result", result, (req, res, next) => {
     console.log(req.query)
     next();
+})
+
+app.get("/results", result, (req, res) => {
+    const quantity = parseInt(req.query.quantity)
+    let picks;
+    if (quantity === undefined | !Number.isInteger(parseInt(quantity))) {
+        picks = 1
+        console.log("Query 'quantity' is not a number. Setting picks to 1");
+    } else {
+        picks = parseInt(quantity)
+    }
+    return db.collection("Exercises").get()
+        .then(querySnapshot => {
+            const numDocuments = querySnapshot.docs.length
+            if (numDocuments === 0 | numDocuments < picks) {
+                return res.status(200).send("Query not continued. Number of items in db", numDocuments, "and number of picks", picks)
+            } else if (numDocuments === picks) {
+                console.log("Sending ordered list")
+                // Returns array
+                return res.status(200).render("result", {
+                    exercises: querySnapshot.docs.map(doc => doc.data())
+                })
+            } else {
+                // Desired branch. Number of picks is < the number of elements to pick from.
+                const subCollectionArray = customFisherYates(querySnapshot.docs, picks).map(document => document.data())
+                // Returns array
+                return res.status(200).render("result", {
+                    exercises: subCollectionArray,
+                    level: req.query.difficulty
+                })
+
+            }
+        }).catch(reason => {
+            console.error(reason)
+            return res.status(500).send("Error getting document")
+        })
+
 })
 
 // Have to use app becuase firebase won't render the pug templates
