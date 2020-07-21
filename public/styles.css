@@ -1,3 +1,9 @@
-body{
-    background-color: aquamarine;
+#home-body{
+    background-color: darkorange;
+}
+#result-body{
+    background-color: darksalmon;
+}
+#form-body{
+    background-color: lightskyblue;
 }
