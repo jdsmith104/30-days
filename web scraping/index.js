@@ -5,54 +5,76 @@ const { JSDOM } = jsdom;
 
 const root = "https://www.spotebi.com/exercise-guide/";
 
-async function getPageContent() {
-  const res = await fetch(
-    "https://www.spotebi.com/exercise-guide/leg-exercises/"
-  );
-  const body = await res.text();
+async function buildExerciseInfo(link) {
+  const detailedExercisePage = await fetch(link);
+  const detailedExerciseBody = await detailedExercisePage.text();
 
-  const dom = await new JSDOM(body);
+  // Gets images from page (jpg and gif)
+  const dom = await new JSDOM(detailedExerciseBody);
+  getImageFromDetailedExerciseDom(dom);
+
+  // Get sets
+
+  // Get instructions
+  getInstructionsFromDetailedExerciseDom(dom);
+
+  // Get primary muscles
+
+  // Form
+}
+
+async function getImageFromDetailedExerciseDom(dom) {
   const imgQuery = dom.window.document.querySelectorAll("img");
   imgQuery.forEach((element) => {
     if (element.src.includes("illustration")) {
-      const imageSrc = element.src.slice(0, -12) + ".jpg";
+      const imageSrc = element.src;
       console.log(imageSrc);
     }
   });
+}
+
+async function getInstructionsFromDetailedExerciseDom(dom) {
+  const paragraphQuery = dom.window.document.querySelectorAll("p");
+  const headerQuery = dom.window.document.querySelectorAll("h2");
+  headerQuery.forEach((element) => {
+    const headerText = element.textContent;
+    if (headerText.includes("Instructions")) {
+      const sibling = element.nextSibling.nextSibling;
+      console.log(sibling?.innerHTML);
+    }
+  });
+}
+
+async function getExerciseGuideLinks(link) {
+  const res = await fetch(link);
+  const body = await res.text();
+
+  const dom = await new JSDOM(body);
 
   const detailedExercisesLinks = Array();
 
   const query = dom.window.document.querySelectorAll("a");
   query.forEach((element) => {
     const href = element.href;
-    if (href.includes("exercise-guide") && href !== root) {
+    if (
+      href.includes("exercise-guide") &&
+      href !== root &&
+      !href.includes("exercises")
+    ) {
       const detailedLink = href;
       detailedExercisesLinks.push(detailedLink);
     }
   });
 
-  const res1 = await fetch(detailedExercisesLinks[0]);
-  const body1 = await res1.text();
+  return detailedExercisesLinks;
+}
 
-  // Gets image from page
-  const dom1 = await new JSDOM(body1);
-  const imgQuery1 = dom1.window.document.querySelectorAll("img");
-  imgQuery1.forEach((element) => {
-    if (element.src.includes("illustration")) {
-      const imageSrc = element.src.slice(0, -12) + ".jpg";
-      console.log(imageSrc);
-    }
-  });
+async function getPageContent() {
+  const detailedExercisesLinks = await getExerciseGuideLinks(
+    "https://www.spotebi.com/exercise-guide/leg-exercises/"
+  );
 
-  // Get gif
-
-  // Get sets
-
-  // Get instructions
-
-  // Get primary muscles
-
-  // Form
+  buildExerciseInfo(detailedExercisesLinks[2]);
 }
 
 getPageContent();
