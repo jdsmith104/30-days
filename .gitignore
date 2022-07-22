@@ -3,3 +3,4 @@ functions/firebase-debug.log
 *.log
 .vscode/
 web scraping/node_modules/
+web scraping/dist/
