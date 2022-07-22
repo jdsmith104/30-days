@@ -180,14 +180,14 @@ async function getPageContent(url) {
 
 const routes = [
   "leg-exercises/",
-  // "glutes-hip-flexors-exercises/",
-  // "abs-obliques-exercises/",
-  // "biceps-exercises/",
-  // "triceps-exercises/",
-  // "shoulder-exercises/",
-  // "chest-exercises/",
-  // "back-exercises/",
-  // "yoga-poses/",
+  "glutes-hip-flexors-exercises/",
+  "abs-obliques-exercises/",
+  "biceps-exercises/",
+  "triceps-exercises/",
+  "shoulder-exercises/",
+  "chest-exercises/",
+  "back-exercises/",
+  "yoga-poses/",
 ];
 
 const siteRoot: string = "https://www.spotebi.com/exercise-guide/";
