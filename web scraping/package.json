@@ -1,0 +1,15 @@
+{
+  "name": "WebScaper",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.12",
+    "jsdom": "^20.0.0",
+    "node-fetch": "^3.2.8"
+  },
+  "scripts": {
+    "run": "node index.js"
+  },
+  "type": "module"
+}
