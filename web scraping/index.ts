@@ -169,11 +169,18 @@ async function getExerciseGuideLinks(link: string) {
   return detailedExercisesLinks;
 }
 
-async function getPageContent(url) {
+async function getExercisesFromPage(url: string) {
   const detailedExercisesLinks = await getExerciseGuideLinks(url);
   const exercises: Array<Exercise> = Array<Exercise>(0);
-  const exercise = await buildExerciseInfo(detailedExercisesLinks[2]);
-  exercises.push(exercise);
+
+  detailedExercisesLinks.forEach(async (link) => {
+    try {
+      const exercise = await buildExerciseInfo(link);
+      exercises.push(exercise);
+    } catch (error) {
+      console.log("Error function buildExerciseInfo()", link);
+    }
+  });
 
   return exercises;
 }
@@ -199,7 +206,7 @@ async function main(): Promise<any> {
     const url = siteRoot + route;
     try {
       // eslint-disable-next-line no-await-in-loop
-      const exercises = await getPageContent(url);
+      const exercises = await getExercisesFromPage(url);
       output[route] = exercises;
     } catch (error) {
       console.log(url, error);
@@ -208,6 +215,25 @@ async function main(): Promise<any> {
   return output;
 }
 
+function getDateTime() {
+  const date = new Date();
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1; // "+ 1" becouse the 1st month is 0
+  const day = date.getDate();
+  const hour = date.getHours();
+  const minutes = date.getMinutes();
+  const secconds = date.getSeconds();
+  const datetime = `${year}${month}${day}_${hour}${minutes}${secconds}`;
+  return datetime;
+}
+
 main().then((output) => {
-  writeFileSync("test.json", JSON.stringify(output));
+  const datetime: string = getDateTime();
+  const filename: string = `exersize_data_${datetime}.json`;
+  try {
+    writeFileSync(filename, JSON.stringify(output));
+  } catch (error) {
+    console.log("Error writing file", error);
+  }
+  console.log("Finished");
 });
