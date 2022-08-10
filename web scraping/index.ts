@@ -7,11 +7,11 @@ const { JSDOM } = jsdom;
 
 const root = "https://www.spotebi.com/exercise-guide/";
 
-async function getImageFromDetailedExerciseDom(dom): Promise<string[]> {
+function getImageFromDetailedExerciseDom(dom): string[] {
   const result = [];
   const imgQuery = dom.window.document.querySelectorAll("img");
   imgQuery.forEach((element) => {
-    if (element.src.includes("illustration")) {
+    if (element.src.includes("illustration") || element.src.includes("pose")) {
       const imageSrc = element.src;
       result.push(imageSrc);
     }
@@ -19,8 +19,8 @@ async function getImageFromDetailedExerciseDom(dom): Promise<string[]> {
   return result;
 }
 
-async function getInstructionsFromDetailedExerciseDom(dom) {
-  let result;
+function getInstructionsFromDetailedExerciseDom(dom): string {
+  let result = "";
   const headerQuery = dom.window.document.querySelectorAll("h2");
   headerQuery.forEach((element) => {
     const headerText = element.textContent;
@@ -32,8 +32,8 @@ async function getInstructionsFromDetailedExerciseDom(dom) {
   return result;
 }
 
-async function getSetsFromDetailedExerciseDom(dom) {
-  let result;
+function getSetsFromDetailedExerciseDom(dom): string {
+  let result = "";
   const headerQuery = dom.window.document.querySelectorAll("h2");
   headerQuery.forEach((element) => {
     const headerText = element.textContent;
@@ -45,8 +45,8 @@ async function getSetsFromDetailedExerciseDom(dom) {
   return result;
 }
 
-async function getMusclesAndEquipmentFromDetailedExerciseDom(dom) {
-  let result;
+function getMusclesAndEquipmentFromDetailedExerciseDom(dom): string {
+  let result = "";
   const paragraphQuery = dom.window.document.querySelectorAll("p");
   paragraphQuery.forEach((element) => {
     const pText = element.textContent;
@@ -57,24 +57,27 @@ async function getMusclesAndEquipmentFromDetailedExerciseDom(dom) {
   return result;
 }
 
-async function getFormFromDetailedExerciseDom(dom) {
-  let result;
+function getFormFromDetailedExerciseDom(dom): string {
+  let result = "";
   const headerQuery = dom.window.document.querySelectorAll("h2");
   headerQuery.forEach((element) => {
     const headerText = element.textContent;
     if (headerText.includes("Proper Form And Breathing Pattern")) {
       const sibling = element.nextSibling.nextSibling;
       result = sibling?.innerHTML;
+    } else if (headerText.includes("Mindfulness Practice")) {
+      const sibling = element.nextSibling.nextSibling;
+      result = sibling?.innerHTML;
     }
   });
   return result;
 }
-async function getExerciseBenefitsFromDetailedExerciseDom(dom) {
-  let result;
+function getExerciseBenefitsFromDetailedExerciseDom(dom): string {
+  let result = "";
   const headerQuery = dom.window.document.querySelectorAll("h2");
   headerQuery.forEach((element) => {
     const headerText = element.textContent;
-    if (headerText.includes("Exercise Benefits")) {
+    if (headerText.includes("Benefits")) {
       const sibling = element.nextSibling.nextSibling;
       result = sibling?.innerHTML;
     }
@@ -82,12 +85,51 @@ async function getExerciseBenefitsFromDetailedExerciseDom(dom) {
   return result;
 }
 
-async function getRelatedExercisesFromDetailedExerciseDom(dom) {
-  let result;
+function getRelatedExercisesFromDetailedExerciseDom(dom): string {
+  let result = "";
   const headerQuery = dom.window.document.querySelectorAll("h2");
   headerQuery.forEach((element) => {
     const headerText = element.textContent;
     if (headerText.includes("Related") && headerText.includes("Exercises")) {
+      const sibling = element.nextSibling.nextSibling;
+      result = `${headerText} ${sibling?.innerHTML}`;
+    }
+  });
+  return result;
+}
+
+function getRelatedYogaPosesFromDetailedExerciseDom(dom): string {
+  let result = "";
+  const headerQuery = dom.window.document.querySelectorAll("h2");
+  headerQuery.forEach((element) => {
+    const headerText = element.textContent;
+    if (headerText.includes("Related Yoga Poses")) {
+      const sibling = element.nextSibling.nextSibling;
+      result = `${headerText} ${sibling?.innerHTML}`;
+    }
+  });
+  return result;
+}
+
+function getYogaRoutineFromDetailedExerciseDom(dom): string {
+  let result = "";
+  const headerQuery = dom.window.document.querySelectorAll("h2");
+  headerQuery.forEach((element) => {
+    const headerText = element.textContent;
+    if (headerText.includes("Preparatory, Complementary and Follow-Up Poses")) {
+      const sibling = element.nextSibling.nextSibling;
+      result = `${headerText} ${sibling?.innerHTML}`;
+    }
+  });
+  return result;
+}
+
+function getContraindicationsFromDetailedExerciseDom(dom): string {
+  let result = "";
+  const headerQuery = dom.window.document.querySelectorAll("h2");
+  headerQuery.forEach((element) => {
+    const headerText = element.textContent;
+    if (headerText.includes("Contraindications")) {
       const sibling = element.nextSibling.nextSibling;
       result = `${headerText} ${sibling?.innerHTML}`;
     }
@@ -104,6 +146,15 @@ interface Exercise {
   benefits: string;
   related: string;
 }
+interface YogaExericse {
+  images: Array<string>;
+  instructions: string;
+  form: string;
+  benefits: string;
+  related: string;
+  routine: string;
+  contraindications: string;
+}
 
 async function buildExerciseInfo(link: string): Promise<Exercise> {
   const detailedExercisePage = await fetch(link);
@@ -111,26 +162,26 @@ async function buildExerciseInfo(link: string): Promise<Exercise> {
   const dom = await new JSDOM(detailedExerciseBody);
 
   // Gets images from page (jpg and gif)
-  const imgLinks = await getImageFromDetailedExerciseDom(dom);
+  const imgLinks = getImageFromDetailedExerciseDom(dom);
 
   // Get sets
-  const sets = await getSetsFromDetailedExerciseDom(dom);
+  const sets = getSetsFromDetailedExerciseDom(dom);
 
   // Get instructions
-  const instructions = await getInstructionsFromDetailedExerciseDom(dom);
+  const instructions = getInstructionsFromDetailedExerciseDom(dom);
 
   // Get primary muscles
   const musclesAndEquipment =
-    await getMusclesAndEquipmentFromDetailedExerciseDom(dom);
+    getMusclesAndEquipmentFromDetailedExerciseDom(dom);
 
   // Form
-  const form = await getFormFromDetailedExerciseDom(dom);
+  const form = getFormFromDetailedExerciseDom(dom);
 
   // Exercise benefits
-  const benefits = await getExerciseBenefitsFromDetailedExerciseDom(dom);
+  const benefits = getExerciseBenefitsFromDetailedExerciseDom(dom);
 
   // Related exericses
-  const related = await getRelatedExercisesFromDetailedExerciseDom(dom);
+  const related = getRelatedExercisesFromDetailedExerciseDom(dom);
 
   const exercise: Exercise = {
     images: imgLinks,
@@ -144,14 +195,46 @@ async function buildExerciseInfo(link: string): Promise<Exercise> {
 
   return exercise;
 }
+async function buildYogaInfo(link: string): Promise<YogaExericse> {
+  const detailedExercisePage = await fetch(link);
+  const detailedExerciseBody = await detailedExercisePage.text();
+  const dom = await new JSDOM(detailedExerciseBody);
 
-async function getExerciseGuideLinks(link: string) {
+  // Gets images from page (jpg and gif)
+  const images = getImageFromDetailedExerciseDom(dom);
+
+  // Get instructions
+  const instructions = getInstructionsFromDetailedExerciseDom(dom);
+
+  const form = getFormFromDetailedExerciseDom(dom);
+
+  const benefits = getExerciseBenefitsFromDetailedExerciseDom(dom);
+
+  const related = getRelatedYogaPosesFromDetailedExerciseDom(dom);
+  const routine = getYogaRoutineFromDetailedExerciseDom(dom);
+
+  const contraindications = getContraindicationsFromDetailedExerciseDom(dom);
+
+  const exercise: YogaExericse = {
+    images,
+    instructions,
+    routine,
+    contraindications,
+    form,
+    benefits,
+    related,
+  };
+
+  return exercise;
+}
+
+async function getExerciseGuideLinks(link: string): Promise<string[]> {
   const res = await fetch(link);
   const body = await res.text();
 
   const dom = await new JSDOM(body);
 
-  const detailedExercisesLinks = [];
+  const detailedExercisesLinks: string[] = [];
 
   const query = dom.window.document.querySelectorAll("a");
   query.forEach((element) => {
@@ -169,23 +252,39 @@ async function getExerciseGuideLinks(link: string) {
   return detailedExercisesLinks;
 }
 
-async function getExercisesFromPage(url: string) {
-  const detailedExercisesLinks = await getExerciseGuideLinks(url);
-  const exercises: Array<Exercise> = Array<Exercise>(0);
-
-  detailedExercisesLinks.forEach(async (link) => {
+function BuildExerciseLinks(
+  detailedExercisesLinks: string[],
+  exerciseGuideUrl: string
+): any[] {
+  const exercises: Array<any> = Array<any>(0);
+  detailedExercisesLinks.forEach((link) => {
     try {
-      const exercise = await buildExerciseInfo(link);
-      exercises.push(exercise);
+      if (exerciseGuideUrl.includes("yoga")) {
+        buildYogaInfo(link).then((exercise: YogaExericse) =>
+          exercises.push(exercise)
+        );
+      } else {
+        buildExerciseInfo(link).then((exercise: Exercise) =>
+          exercises.push(exercise)
+        );
+      }
     } catch (error) {
-      console.log("Error function buildExerciseInfo()", link);
+      console.log("Error function buildExerciseInfo()", link, error);
     }
   });
-
   return exercises;
 }
 
+async function getExercisesFromPage(exerciseGuideUrl: string): Promise<any[]> {
+  const detailedExercisesLinks: string[] = await getExerciseGuideLinks(
+    exerciseGuideUrl
+  );
+
+  return BuildExerciseLinks(detailedExercisesLinks, exerciseGuideUrl);
+}
+
 const routes = [
+  "yoga-poses/",
   "leg-exercises/",
   "glutes-hip-flexors-exercises/",
   "abs-obliques-exercises/",
@@ -194,7 +293,6 @@ const routes = [
   "shoulder-exercises/",
   "chest-exercises/",
   "back-exercises/",
-  "yoga-poses/",
 ];
 
 const siteRoot: string = "https://www.spotebi.com/exercise-guide/";

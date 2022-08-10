@@ -14,5 +14,7 @@ module.exports = {
     quotes: [2, "double", { avoidEscape: true }],
     "comma-dangle": "off",
     "operator-linebreak": [0, "after"],
+    "implicit-arrow-linebreak": [2, "below"],
+    "function-paren-newline": [0, "always"],
   },
 };
