@@ -108,19 +108,72 @@ class JSONTidier:
     return exercise
 
   def format_contraindications(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    """Format contraindications (yoga only)
+
+    Args:
+        exercise (ExtendedExercise): object
+
+    Returns:
+        ExtendedExercise: modified object
+    """
+    key = "contraindications"
+    routine = exercise.get(key)
+    if routine:
+      text  = routine.removeprefix("Contraindications ")
+      exercise[key] = text
     return exercise
 
   def format_benefits(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    """Format benefits (currently not required)
+
+    Args:
+        exercise (ExtendedExercise): object
+
+    Returns:
+        ExtendedExercise: modified object
+    """
     return exercise
 
   def format_sets(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    """Format sets (currently not required)
+
+    Args:
+        exercise (ExtendedExercise): object
+
+    Returns:
+        ExtendedExercise: modified object
+    """
     return exercise
 
   def format_equipment(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    """Format equipment (exercise only)
+
+    Args:
+        exercise (ExtendedExercise): object
+
+    Returns:
+        ExtendedExercise: modified object
+    """
+    key = "musclesAndEquipment"
+    related = exercise.get(key)
+    if related:
+      related = related.replace(": ", "")
+      related_list = self.separate_string_into_list_by_capital(related)
+      related_dict = dict()
+      for i in range(0, len(related_list), 2):
+        related_dict[related_list[i]] = related_list[i+1].lower().split(", ")
+        exercise[key] = related_dict
     return exercise
 
-  def format_contraindications(self, exercise: ExtendedExercise) -> ExtendedExercise:
-    return exercise
+
+  def separate_string_into_list_by_capital(self, inp: str) -> typing.List[str]:
+    matches = re.split("([A-Z])", inp)[1:]
+
+    processed_related = []
+    for i in range(0,len(matches), 2):
+      processed_related.append(matches[i]+ matches[i+1])
+
+    return processed_related
 
 
 
