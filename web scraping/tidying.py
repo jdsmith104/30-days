@@ -2,6 +2,7 @@ from collections import namedtuple
 import json
 import datetime
 import typing
+import re
 
 ExtendedExercise = namedtuple
 
@@ -29,7 +30,7 @@ class JSONTidier:
     # with open(f"exercises-processed-{datetime_now}.json", "w") as outfile:
     #   json.dump(output_data, outfile)
 
-    print(output_data[self.process_category("leg-exercises")][0])
+    print(output_data[self.process_category("leg-exercises")][0], "\n\n")
     print(output_data[self.process_category("yoga-poses")][0])
 
   def process_exercise(self, exercise: typing.Dict):
@@ -54,40 +55,52 @@ class JSONTidier:
     return category.replace("-", " ")
 
   def change_url_to_name(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    """Use the url parameter the create a name and add that to the exercise
+
+    Args:
+        exercise (ExtendedExercise): object
+
+    Returns:
+        ExtendedExercise: modified object
+    """
     url = exercise.get("url")
     if url:
       name = url.removeprefix("https://www.spotebi.com/exercise-guide/")[:-1].replace("-", " ")
       exercise["name"] = name
     return exercise
 
-  def format_instructions(self, exercise) -> ExtendedExercise:
+  def format_instructions(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    key = "instructions"
+    instructions = exercise.get(key)
+    matches = re.findall("\d.([^.]*)", instructions)
+    exercise[key] = matches
     return exercise
 
-  def download_and_label_images(self, exercise) -> ExtendedExercise:
+  def download_and_label_images(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_related(self, exercise) -> ExtendedExercise:
+  def format_related(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_routine(self, exercise) -> ExtendedExercise:
+  def format_routine(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_contraindications(self, exercise) -> ExtendedExercise:
+  def format_contraindications(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_benefits(self, exercise) -> ExtendedExercise:
+  def format_benefits(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_sets(self, exercise) -> ExtendedExercise:
+  def format_sets(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_equipment(self, exercise) -> ExtendedExercise:
+  def format_equipment(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_contraindications(self, exercise) -> ExtendedExercise:
+  def format_contraindications(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
-  def format_routine(self, exercise) -> ExtendedExercise:
+  def format_routine(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
 
