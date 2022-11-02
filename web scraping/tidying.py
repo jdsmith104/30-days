@@ -80,6 +80,15 @@ class JSONTidier:
     return exercise
 
   def format_related(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    key = "related"
+    related = exercise.get(key).split(":")[1]
+    matches = re.split("([A-Z])", related)[1:]
+
+    processed_related = []
+    for i in range(0,len(matches), 2):
+      processed_related.append(matches[i]+ matches[i+1])
+    exercise[key] = processed_related
+
     return exercise
 
   def format_routine(self, exercise: ExtendedExercise) -> ExtendedExercise:
