@@ -198,6 +198,7 @@ class JSONTidier:
     related = exercise.get(key)
     if related:
       related = related.replace(": ", "")
+      # related = related.replace(" / ", "")
       related_list = self.separate_string_into_list_by_capital(related)
       related_dict = dict()
       for i in range(0, len(related_list), 2):
@@ -207,7 +208,9 @@ class JSONTidier:
 
 
   def separate_string_into_list_by_capital(self, inp: str) -> typing.List[str]:
-    matches = re.split("([A-Z])", inp)[1:]
+    # Masking tape to solve this specific problem
+    parsed_inp = inp.replace("Dumbbell / Kettlebell", "Dumbbell/kettlebell")
+    matches = re.split("([A-Z])", parsed_inp)[1:]
 
     processed_related = []
     for i in range(0,len(matches), 2):
