@@ -65,7 +65,7 @@ def get_form(soup: BeautifulSoup):
     header_text: str = element.text
     if "Proper Form And Breathing Pattern" in header_text or "Mindfulness Practice" in header_text:
       sibling = element.next_sibling.next_sibling
-      result = sibling.texts
+      result = sibling.text
       break
   return result
 
