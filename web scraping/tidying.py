@@ -4,6 +4,7 @@ import datetime
 import typing
 import re
 import requests
+from pathlib import Path
 
 ExtendedExercise = namedtuple
 
@@ -212,9 +213,11 @@ class JSONTidier:
         image_url (str): the url for the image
         filename (str): the filename to save the image under (including the file type)
     """
-    image_data = requests.get(url).content
-    with open(filename, 'wb') as handler:
-        handler.write(image_data)
+    file: Path = Path(filename)
+    if not file.exists():
+      image_data = requests.get(url).content
+      with open(filename, 'wb') as handler:
+          handler.write(image_data)
 
 
 
