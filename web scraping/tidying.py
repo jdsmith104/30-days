@@ -3,6 +3,7 @@ import json
 import datetime
 import typing
 import re
+import requests
 
 ExtendedExercise = namedtuple
 
@@ -22,8 +23,9 @@ class JSONTidier:
 
       # Verfiy not null
       if exercises:
-        processed_exercises = [self.process_exercise(exercise) for exercise in exercises]
-        output_data[self.process_category(category)] = processed_exercises
+        processed_category = self.process_category(category)
+        processed_exercises = [self.process_exercise(exercise, processed_category) for exercise in exercises]
+        output_data[processed_category] = processed_exercises
     
     datetime_now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -32,12 +34,12 @@ class JSONTidier:
       print("Finished")
 
 
-  def process_exercise(self, exercise: typing.Dict):
+  def process_exercise(self, exercise: typing.Dict, category: str):
     exercise_next: ExtendedExercise = {}
 
     exercise_next = self.change_url_to_name(exercise)
     exercise_next = self.format_instructions(exercise)
-    exercise_next = self.download_and_label_images(exercise)
+    exercise_next = self.process_images(exercise, category)
     exercise_next = self.format_related(exercise)
     exercise_next = self.format_routine(exercise)
     exercise_next = self.format_contraindications(exercise)
@@ -75,7 +77,25 @@ class JSONTidier:
     exercise[key] = matches
     return exercise
 
-  def download_and_label_images(self, exercise: ExtendedExercise) -> ExtendedExercise:
+  def process_images(self, exercise: ExtendedExercise, category: str) -> ExtendedExercise:
+    """Download and label images. Must be called after change_url_to_name
+
+    Args:
+        exercise (ExtendedExercise): _description_
+        category (str): _description_
+
+    Returns:
+        ExtendedExercise: _description_
+    """
+    filename = category+"_"+ exercise.get("name")
+    filename = filename.replace(" ", "_")
+    for i, url in enumerate(exercise.get("images")):
+      ext = re.findall("(\.(.*))", url[-5:])[0][0]
+      try:
+        self.download_and_save_image(url=url, filename="images/"+filename+"_"+str(i)+ext)
+      except Exception as e:
+        print(e, filename)
+
     return exercise
 
   def format_related(self, exercise: ExtendedExercise) -> ExtendedExercise:
@@ -184,6 +204,17 @@ class JSONTidier:
       processed_related.append(matches[i]+ matches[i+1])
 
     return processed_related
+
+  def download_and_save_image(self, url: str, filename: str):
+    """Download image from specified url and save as filename
+
+    Args:
+        image_url (str): the url for the image
+        filename (str): the filename to save the image under (including the file type)
+    """
+    image_data = requests.get(url).content
+    with open(filename, 'wb') as handler:
+        handler.write(image_data)
 
 
 
