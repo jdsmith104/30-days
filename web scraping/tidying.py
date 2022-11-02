@@ -27,11 +27,10 @@ class JSONTidier:
     
     datetime_now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
-    # with open(f"exercises-processed-{datetime_now}.json", "w") as outfile:
-    #   json.dump(output_data, outfile)
+    with open(f"exercises-processed-{datetime_now}.json", "w") as outfile:
+      json.dump(output_data, outfile)
+      print("Finished")
 
-    print(output_data[self.process_category("leg-exercises")][0], "\n\n")
-    print(output_data[self.process_category("yoga-poses")][0])
 
   def process_exercise(self, exercise: typing.Dict):
     exercise_next: ExtendedExercise = {}
@@ -72,7 +71,7 @@ class JSONTidier:
   def format_instructions(self, exercise: ExtendedExercise) -> ExtendedExercise:
     key = "instructions"
     instructions = exercise.get(key)
-    matches = re.findall("\d.([^.]*)", instructions)
+    matches = re.findall("\d.\s([^.]*)", instructions)
     exercise[key] = matches
     return exercise
 
@@ -80,14 +79,25 @@ class JSONTidier:
     return exercise
 
   def format_related(self, exercise: ExtendedExercise) -> ExtendedExercise:
-    key = "related"
-    related = exercise.get(key).split(":")[1]
-    matches = re.split("([A-Z])", related)[1:]
+    """Format related exercises
 
-    processed_related = []
-    for i in range(0,len(matches), 2):
-      processed_related.append(matches[i]+ matches[i+1])
-    exercise[key] = processed_related
+    Args:
+        exercise (ExtendedExercise): object
+
+    Returns:
+        ExtendedExercise: modified object
+    """
+    key = "related"
+    related = exercise.get(key)
+    if related:
+      related = related.split(":")[1]
+      matches = re.split("([A-Z])", related)[1:]
+
+      processed_related = []
+      for i in range(0,len(matches), 2):
+        related_exercise = matches[i]+ matches[i+1]
+        processed_related.append(related_exercise.lower())
+      exercise[key] = processed_related
 
     return exercise
 
