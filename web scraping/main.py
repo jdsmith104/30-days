@@ -234,7 +234,6 @@ def run():
     # Build JSON object and remove end '/'
     output[route[:-1]] = exercises
 
-  print(output)
   datetime_now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
   with open(f"exercises-{datetime_now}.json", "w") as outfile:
     json.dump(output, outfile)
