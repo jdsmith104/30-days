@@ -5,7 +5,10 @@ import typing
 import re
 import requests
 from pathlib import Path
+import traceback
 
+
+DL_IMG = True
 ExtendedExercise = namedtuple
 
 ExtendedExercise = typing.TypedDict('Exercise', {'images': typing.List[str], 'instructions': str, "form": str, "benefits": str, "related": str, "sets": str, "musclesAndEquipment": str, "url": str, "routine": str, "contraindications": str})
@@ -25,8 +28,11 @@ class JSONTidier:
       # Verfiy not null
       if exercises:
         processed_category = self.process_category(category)
+        print(f"Processing category: {processed_category}")
+
         processed_exercises = [self.process_exercise(exercise, processed_category) for exercise in exercises]
         output_data[processed_category] = processed_exercises
+      print("Finished category")
     
     datetime_now = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
 
@@ -37,17 +43,20 @@ class JSONTidier:
 
   def process_exercise(self, exercise: typing.Dict, category: str):
     exercise_next: ExtendedExercise = {}
-
-    exercise_next = self.change_url_to_name(exercise)
-    exercise_next = self.format_instructions(exercise)
-    exercise_next = self.process_images(exercise, category)
-    exercise_next = self.format_related(exercise)
-    exercise_next = self.format_routine(exercise)
-    exercise_next = self.format_contraindications(exercise)
-    exercise_next = self.format_benefits(exercise)
-    exercise_next = self.format_sets(exercise)
-    exercise_next = self.format_equipment(exercise)
-
+    try:
+      exercise_next = self.change_url_to_name(exercise)
+      exercise_next = self.format_instructions(exercise)
+      exercise_next = self.process_images(exercise, category)
+      exercise_next = self.format_related(exercise)
+      exercise_next = self.format_routine(exercise)
+      exercise_next = self.format_contraindications(exercise)
+      exercise_next = self.format_benefits(exercise)
+      exercise_next = self.format_sets(exercise)
+      exercise_next = self.format_equipment(exercise)
+    except Exception as e:
+      traceback.print_exc()
+      print("Problem with:\n", exercise)
+      print(e)
     return exercise_next
 
   def clean_string(self, inp: str) -> str:
@@ -214,7 +223,7 @@ class JSONTidier:
         filename (str): the filename to save the image under (including the file type)
     """
     file: Path = Path(filename)
-    if not file.exists():
+    if not file.exists() and DL_IMG:
       image_data = requests.get(url).content
       with open(filename, 'wb') as handler:
           handler.write(image_data)
@@ -222,4 +231,5 @@ class JSONTidier:
 
 
 if __name__ == '__main__':
-  tider = JSONTidier("demo.json")
+  DL_IMG = False
+  tider = JSONTidier("exercises-20221102_101508.json")
