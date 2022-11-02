@@ -100,9 +100,12 @@ class JSONTidier:
     filename = category+"_"+ exercise.get("name")
     filename = filename.replace(" ", "_")
     for i, url in enumerate(exercise.get("images")):
-      ext = re.findall("(\.(.*))", url[-5:])[0][0]
+      match = re.findall("\.(.*)", url[-5:])
+      file_extension = match[0]
       try:
-        self.download_and_save_image(url=url, filename="images/"+filename+"_"+str(i)+ext)
+        # Create file path in folder images and building the filename and extension
+        path = f"images/{filename}_{str(i)}.{file_extension}"
+        self.download_and_save_image(url=url, filename=path)
       except Exception as e:
         print(e, filename)
 
