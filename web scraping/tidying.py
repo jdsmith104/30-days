@@ -92,6 +92,19 @@ class JSONTidier:
     return exercise
 
   def format_routine(self, exercise: ExtendedExercise) -> ExtendedExercise:
+    """Format the routine parameter (yoga only)
+
+    Args:
+        exercise (ExtendedExercise): _description_
+
+    Returns:
+        ExtendedExercise: _description_
+    """
+    key = "routine"
+    routine = exercise.get(key)
+    if routine:
+      text  = routine.removeprefix("Preparatory, Complementary and Follow-Up Poses ")
+      exercise[key] = text
     return exercise
 
   def format_contraindications(self, exercise: ExtendedExercise) -> ExtendedExercise:
@@ -107,9 +120,6 @@ class JSONTidier:
     return exercise
 
   def format_contraindications(self, exercise: ExtendedExercise) -> ExtendedExercise:
-    return exercise
-
-  def format_routine(self, exercise: ExtendedExercise) -> ExtendedExercise:
     return exercise
 
 
