@@ -13,7 +13,7 @@ ExtendedExercise = namedtuple
 
 ExtendedExercise = typing.TypedDict('Exercise', {'images': typing.List[str], 'instructions': str, "form": str, "benefits": str, "related": str, "sets": str, "musclesAndEquipment": str, "url": str, "routine": str, "contraindications": str})
 
-class JSONTidier:
+class JSONParser:
   def __init__(self, filename: str) -> None:
     with open(filename, 'r') as f:
       data: typing.Dict[str, typing.List] = json.load(f)
@@ -238,4 +238,4 @@ class JSONTidier:
 
 if __name__ == '__main__':
   DL_IMG = False
-  tider = JSONTidier("exercises-20221102_101508.json")
+  tider = JSONParser("exercises-20221102_101508.json")
